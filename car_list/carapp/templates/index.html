@@ -1,0 +1,98 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Car Form</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+</head>
+<body>
+    <div class="container">
+        <h2>Add Car</h2>
+        <form id="carForm" method="post" action="{% url 'add_car' %}">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="carType">Car Type:</label>
+                <select id="carType" class="form-control" required>
+                    <option value="Electric" >Electric</option>
+                    <option value="Gas">Gas</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="model">Model:</label>
+                <input type="text" id="model" name="model" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="year">Year:</label>
+                <input type="number" id="year" name="year" class="form-control" required>
+            </div>
+            <div class="form-group" id="batteryCapacityField" style="display: none;">
+                <label for="batteryCapacity">Battery Capacity (kWh):</label>
+                <input type="number" id="batteryCapacity" name="batteryCapacity" class="form-control">
+            </div>
+            <div class="form-group" id="fuelEfficiencyField" style="display: none;">
+                <label for="fuelEfficiency">Fuel Efficiency (MPG):</label>
+                <input type="number" id="fuelEfficiency" name="fuelEfficiency" class="form-control">
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script>
+
+$(document).ready(function() {
+    $('#carType').change(function() {
+        var carType = $(this).val();
+        if (carType === 'Electric') {
+            $('#batteryCapacityField').show();
+            $('#fuelEfficiencyField').hide();
+        } else if (carType === 'Gas') {
+            $('#batteryCapacityField').hide();
+            $('#fuelEfficiencyField').show();
+        }
+        else  {
+            $('#batteryCapacityField').show();
+            $('#fuelEfficiencyField').hide();
+        }
+    });
+
+    $('#carForm').submit(function(e) {
+        e.preventDefault();
+        var carType = $('#carType').val();
+        var name = $('#name').val();
+        var model = $('#model').val();
+        var year = $('#year').val();
+        var batteryCapacity = $('#batteryCapacity').val();
+        var fuelEfficiency = $('#fuelEfficiency').val();
+
+        $.ajax({
+            type: 'POST',
+            url: '/add-car/',
+            data: {
+                'car_type': carType,
+                'name': name,
+                'model': model,
+                'year': year,
+                'battery_capacity': batteryCapacity,
+                'fuel_efficiency': fuelEfficiency,
+                'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
+            },
+            success: function() {
+                alert('Car added successfully!');
+                $('#carForm')[0].reset();
+            },
+            error: function() {
+                alert('An error occurred while adding the car.');
+            }
+        });
+    });
+});
+    </script>
+</body>
+</html>
