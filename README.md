@@ -1,0 +1,2 @@
+# Business_Automation_Assesment_Car
+Preliminary assessment for internship
